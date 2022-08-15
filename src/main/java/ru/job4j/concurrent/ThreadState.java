@@ -9,20 +9,16 @@ public class ThreadState {
         Thread second = new Thread(
                 () -> System.out.println("Second thread name: " + Thread.currentThread().getName())
         );
-        System.out.println("First thread condition: ");
-        System.out.println(first.getState());
+        System.out.println("First thread start condition: " + first.getState());
+        System.out.println("Second thread start condition: " + second.getState());
         first.start();
-        while (first.getState() != Thread.State.TERMINATED) {
-            System.out.println(first.getState());
-        }
-        System.out.println(first.getState());
-        System.out.println("Second thread condition: ");
-        System.out.println(second.getState());
         second.start();
-        while (second.getState() != Thread.State.TERMINATED) {
-            System.out.println(second.getState());
+        while (first.getState() != Thread.State.TERMINATED || second.getState() != Thread.State.TERMINATED) {
+            System.out.println("First thread condition: " + first.getState());
+            System.out.println("Second thread condition: " + second.getState());
         }
-        System.out.println(second.getState());
+        System.out.println("First thread final condition: " + first.getState());
+        System.out.println("Second thread final condition: " + second.getState());
         System.out.println(Thread.currentThread().getName() + " is terminated");
     }
 }
