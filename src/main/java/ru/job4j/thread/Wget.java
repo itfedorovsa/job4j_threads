@@ -13,7 +13,7 @@ public class Wget implements Runnable {
     private final String url;
     private final int speed;
     private final String output;
-    private final long INTERVAL = 1000;
+    private final long interval = 1000;
 
     public Wget(String url, int speed, String output) {
         this.url = url;
@@ -35,8 +35,8 @@ public class Wget implements Runnable {
                 if (downloadedData >= speed) {
                     long now = System.currentTimeMillis();
                     long timeDiff = now - timestamp;
-                    if (timeDiff < INTERVAL) {
-                        Thread.sleep(INTERVAL - timeDiff);
+                    if (timeDiff < interval) {
+                        Thread.sleep(interval - timeDiff);
                         downloadedData = 0;
                         timestamp = System.currentTimeMillis();
                     }
