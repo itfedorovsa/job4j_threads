@@ -6,30 +6,42 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Wget implements Runnable {
     private final String url;
     private final int speed;
+    private final String output;
+    private final long INTERVAL = 1000;
 
-    public Wget(String url, int speed) {
+    public Wget(String url, int speed, String output) {
         this.url = url;
         this.speed = speed;
+        this.output = output;
     }
 
     @Override
     public void run() {
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream("downloaded.xml")) {
+             FileOutputStream fileOutputStream = new FileOutputStream(output)) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
+            int downloadedData = 0;
             long timestamp = System.currentTimeMillis();
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
-                long now = System.currentTimeMillis();
-                if (timestamp + speed >= now) {
-                    Thread.sleep(timestamp + speed - now);
+                downloadedData += bytesRead;
+                if (downloadedData >= speed) {
+                    long now = System.currentTimeMillis();
+                    long timeDiff = now - timestamp;
+                    if (timeDiff < INTERVAL) {
+                        Thread.sleep(INTERVAL - timeDiff);
+                        downloadedData = 0;
+                        timestamp = System.currentTimeMillis();
+                    }
                 }
-                timestamp = System.currentTimeMillis();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,9 +52,7 @@ public class Wget implements Runnable {
 
     public static void main(String[] args) throws InterruptedException {
         String url = args[0];
-        if (args.length != 2) {
-            throw new IllegalArgumentException("Arguments must looks like \"URL speed\"");
-        }
+        String output = args[2];
         try {
             new URL(url).toURI();
             Integer.parseInt(args[1]);
@@ -51,8 +61,15 @@ public class Wget implements Runnable {
         } catch (NumberFormatException e) {
             System.out.println("Speed must be a number!");
         }
+        Matcher matcher = Pattern.compile("\\w+.[a-z]{2,5}").matcher(output);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Output filename");
+        }
+        if (args.length != 3) {
+            throw new IllegalArgumentException("Arguments must looks like \"URL speed output_name\"");
+        }
         int speed = Integer.parseInt(args[1]);
-        Thread wget = new Thread(new Wget(url, speed));
+        Thread wget = new Thread(new Wget(url, speed, output));
         wget.start();
         wget.join();
     }
