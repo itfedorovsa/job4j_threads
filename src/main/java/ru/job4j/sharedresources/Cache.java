@@ -1,4 +1,4 @@
-package ru.job4j.synchronize;
+package ru.job4j.sharedresources;
 
 public class Cache {
     private static Cache cache;
