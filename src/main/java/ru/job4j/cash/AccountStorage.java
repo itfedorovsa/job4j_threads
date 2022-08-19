@@ -31,18 +31,9 @@ public class AccountStorage {
         boolean transferred = false;
         Optional<Account> from = getById(fromId);
         Optional<Account> to = getById(toId);
-        int moneyFrom;
-        int moneyTo;
-        if (from.isEmpty() || to.isEmpty()) {
-            return false;
-        }
-        moneyFrom = from.get().amount();
-        moneyTo = to.get().amount();
-        if (moneyFrom >= amount) {
-            moneyFrom -= amount;
-            moneyTo += amount;
-            update(new Account(fromId, moneyFrom));
-            update(new Account(toId, moneyTo));
+        if (from.isPresent() && to.isPresent() && from.get().amount() > amount) {
+            update(new Account(fromId, from.get().amount() - amount));
+            update(new Account(toId, to.get().amount() + amount));
             transferred = true;
         }
         return transferred;
