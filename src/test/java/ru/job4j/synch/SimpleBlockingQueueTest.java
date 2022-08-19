@@ -8,16 +8,24 @@ import java.util.*;
 class SimpleBlockingQueueTest {
 
     @Test
-    void whenAddFiveElementsAndPollThreeElements() {
+    void whenAddFiveElementsAndPollThreeElements() throws InterruptedException {
         var queue = new SimpleBlockingQueue<Integer>(3);
         var producer = new Thread(() -> {
             for (int index = 0; index < 5; index++) {
-                queue.offer(index);
+                try {
+                    queue.offer(index);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         var consumer = new Thread(() -> {
             for (int index = 0; index < 2; index++) {
-                queue.poll();
+                try {
+                    queue.poll();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         consumer.start();
@@ -40,21 +48,33 @@ class SimpleBlockingQueueTest {
     }
 
     @Test
-    void whenTwoConsumers() {
+    void whenTwoConsumers() throws InterruptedException {
         var queue = new SimpleBlockingQueue<Integer>(3);
         var producer = new Thread(() -> {
             for (int index = 0; index < 7; index++) {
-                queue.offer(index);
+                try {
+                    queue.offer(index);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         var consumer1 = new Thread(() -> {
             for (int index = 0; index < 2; index++) {
-                queue.poll();
+                try {
+                    queue.poll();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         var consumer2 = new Thread(() -> {
             for (int index = 0; index < 2; index++) {
-                queue.poll();
+                try {
+                    queue.poll();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         consumer1.start();
