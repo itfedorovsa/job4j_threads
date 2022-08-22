@@ -30,39 +30,39 @@ public class CountBarrier {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         CountBarrier barrier = new CountBarrier(3);
         Thread waiter1 = new Thread(
                 () -> {
                     System.out.println(Thread.currentThread().getName() + " still sleeping");
                     barrier.await();
                     System.out.println(Thread.currentThread().getName() + " finally started");
-                }
+                }, "Waiter1"
         );
         Thread waiter2 = new Thread(
                 () -> {
                     System.out.println(Thread.currentThread().getName() + " still sleeping too");
                     barrier.await();
                     System.out.println(Thread.currentThread().getName() + " finally started too");
-                }
+                }, "Waiter2"
         );
         Thread increaser1 = new Thread(
                 () -> {
                     barrier.count();
-                    System.out.println(Thread.currentThread().getName() + " counter increased");
-                }
+                    System.out.println(Thread.currentThread().getName() + " increases counter");
+                }, "Increaser1"
         );
         Thread increaser2 = new Thread(
                 () -> {
                     barrier.count();
-                    System.out.println(Thread.currentThread().getName() + " counter increased");
-                }
+                    System.out.println(Thread.currentThread().getName() + " increases counter");
+                }, "Increaser2"
         );
         Thread increaser3 = new Thread(
                 () -> {
                     barrier.count();
-                    System.out.println(Thread.currentThread().getName() + " counter increased");
-                }
+                    System.out.println(Thread.currentThread().getName() + " increases counter");
+                }, "Increaser3"
         );
         waiter1.start();
         waiter2.start();
