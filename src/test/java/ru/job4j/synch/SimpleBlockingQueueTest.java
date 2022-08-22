@@ -1,100 +1,82 @@
 package ru.job4j.synch;
 
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-class SimpleBlockingQueueTest {
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+
+public class SimpleBlockingQueueTest {
 
     @Test
-    void whenAddFiveElementsAndPollThreeElements() throws InterruptedException {
-        var queue = new SimpleBlockingQueue<Integer>(3);
-        var producer = new Thread(() -> {
-            for (int index = 0; index < 5; index++) {
-                try {
-                    queue.offer(index);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+    public void whenFetchAllThenGetIt() throws InterruptedException {
+        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(5);
+        Thread producer = new Thread(
+                () -> {
+                    for (int index = 0; index < queue.getQuantity(); index++) {
+                        try {
+                            queue.offer(index);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
                 }
-            }
-        });
-        var consumer = new Thread(() -> {
-            for (int index = 0; index < 2; index++) {
-                try {
-                    queue.poll();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-        consumer.start();
+        );
         producer.start();
-        try {
-            consumer.join();
-            producer.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        var check = new SimpleBlockingQueue<Integer>(3);
-        check.offer(2);
-        check.offer(3);
-        check.offer(4);
-        List<Integer> rsl = new ArrayList<>();
-        rsl.add(check.poll());
-        rsl.add(check.poll());
-        rsl.add(check.poll());
-        assertThat(rsl).isEqualTo(List.of(2, 3, 4));
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(queue.poll());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(buffer, is(Arrays.asList(0, 1, 2, 3, 4)));
     }
 
     @Test
-    void whenTwoConsumers() throws InterruptedException {
-        var queue = new SimpleBlockingQueue<Integer>(3);
-        var producer = new Thread(() -> {
-            for (int index = 0; index < 7; index++) {
-                try {
-                    queue.offer(index);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+    public void whenAddMoreThanQuantityAndFetchAll() throws InterruptedException {
+        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(3);
+        Thread producer = new Thread(
+                () -> {
+                    for (int index = 0; index < 5; index++) {
+                        try {
+                            queue.offer(index);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
                 }
-            }
-        });
-        var consumer1 = new Thread(() -> {
-            for (int index = 0; index < 2; index++) {
-                try {
-                    queue.poll();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-        var consumer2 = new Thread(() -> {
-            for (int index = 0; index < 2; index++) {
-                try {
-                    queue.poll();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-        consumer1.start();
-        consumer2.start();
+        );
         producer.start();
-        try {
-            consumer1.join();
-            consumer2.join();
-            producer.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        var check = new SimpleBlockingQueue<Integer>(3);
-        check.offer(4);
-        check.offer(5);
-        check.offer(6);
-        List<Integer> rsl = new ArrayList<>();
-        rsl.add(check.poll());
-        rsl.add(check.poll());
-        rsl.add(check.poll());
-        assertThat(rsl).isEqualTo(List.of(4, 5, 6));
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(queue.poll());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(buffer, is(Arrays.asList(0, 1, 2, 3, 4)));
     }
 }
