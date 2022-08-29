@@ -25,10 +25,18 @@ class ParallelFindTest {
     }
 
     @Test
-    void whenRecursiveSearch() {
-        Integer[] array = IntStream.range(0, 20).boxed().toArray(Integer[]::new);
+    void whenRecursiveSearch1() {
+        Integer[] array = IntStream.range(0, 30).boxed().toArray(Integer[]::new);
         Integer elem = 15;
         Integer expected = 15;
+        assertThat(ParallelFind.find(array, elem)).isEqualTo(expected);
+    }
+
+    @Test
+    void whenRecursiveSearch2() {
+        Integer[] array = IntStream.range(0, 100).boxed().toArray(Integer[]::new);
+        Integer elem = 65;
+        Integer expected = 65;
         assertThat(ParallelFind.find(array, elem)).isEqualTo(expected);
     }
 
