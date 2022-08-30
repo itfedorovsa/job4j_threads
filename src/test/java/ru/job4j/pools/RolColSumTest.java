@@ -14,10 +14,10 @@ class RolColSumTest {
         int[][] matrix = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
         List<Integer> expected = List.of(6, 12, 15, 15, 24, 18);
         List<Integer> rsl = new ArrayList<>();
-        RolColSum.Sums[] sum = RolColSum.sum(matrix);
-        for (RolColSum.Sums el : sum) {
-            rsl.add(el.getRowSum());
-            rsl.add(el.getColSum());
+        Sums[] sum = RolColSum.sum(matrix);
+        for (Sums el : sum) {
+            rsl.add(el.rowSum());
+            rsl.add(el.colSum());
         }
         assertThat(rsl).isEqualTo(expected);
     }
@@ -28,10 +28,10 @@ class RolColSumTest {
         List<Integer> expected = List.of(6, 12, 15, 15, 24, 18);
         List<Integer> rsl = new ArrayList<>();
         try {
-            RolColSum.Sums[] sum = RolColSum.asyncSum(matrix);
-            for (RolColSum.Sums el : sum) {
-                rsl.add(el.getRowSum());
-                rsl.add(el.getColSum());
+            Sums[] sum = RolColSum.asyncSum(matrix);
+            for (Sums el : sum) {
+                rsl.add(el.rowSum());
+                rsl.add(el.colSum());
             }
         } catch (Exception e) {
             e.printStackTrace();
