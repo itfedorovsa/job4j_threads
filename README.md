@@ -8,4 +8,6 @@ This project presents such topics of multithreading as:
 - JMM                                                               
 - Low-level locks                                                                  
 - Non-blocking algorithms                                                                          
-- Thread-safe collections                                                                         
+- Thread-safe collections  
+
+The project was working with git branches
