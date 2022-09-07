@@ -11,3 +11,5 @@ This project presents such topics of multithreading as:
 - Thread-safe collections 
 
 The project was working with git branches
+
+Added test task "task_124176"
