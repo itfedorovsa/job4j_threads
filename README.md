@@ -2,14 +2,19 @@
 
 Multithreading
 
-This project presents such topics of multithreading as:
-- Synchronous and asynchronous operations                                             
-- Resource synchronization                                                       
-- JMM                                                               
-- Low-level locks                                                                  
-- Non-blocking algorithms                                                                          
-- Thread-safe collections 
+# About
 
-The project was working with git branches
+This project presents individual tasks (lessons) on such topics of multithreading as:
 
-Added test task "task_124176"
+- Synchronous and asynchronous operations
+- Resource synchronization
+- JMM
+- Low-level locks
+- Non-blocking algorithms
+- Thread-safe collections
+
+***
+
+# Contact
+
+Contact me if you have any questions: itfedorovsa@gmail.com
